@@ -5,16 +5,20 @@ DB_PATH = 'tables.db'
 class Statistics:
     @staticmethod
     def get_events(resident_id):
+        conn = sql.connect(DB_PATH)
         return [i for i in conn.execute(f'select * from events_event where resident_id = {resident_id}')]
 
     def get_rating(self, event_id):
+        conn = sql.connect(DB_PATH)
         return [i for i in conn.\
             execute(f'select avg(rating) from users_events where events_id = {event_id} group by events_id')][0][0]
 
     def get_comments(self, event_id):
+        conn = sql.connect(DB_PATH)
         return [i for i in conn.execute(f'select rating, comment from users_events where events_id = {event_id}')]
 
     def get_attendants(self, event_id):
+        conn = sql.connect(DB_PATH)
         return [i for i in conn.\
             execute(f'select count(1) from users_events where events_id = {event_id} group by events_id')][0][0]
 
