@@ -1,21 +1,31 @@
-import sqlalchemy as sql
+import sqlite3 as sql
 
-session = #здесь должна быть сессия
+DB_PATH = 'tables.db'
 
-def get_events(resident_id):
-    return session.query(Event).filter_by(ResidentId=resident_id).all()
+class Statistics:
+    @staticmethod
+    def get_events(resident_id):
+        return [i for i in conn.execute(f'select * from events_event where resident_id = {resident_id}')]
 
-def get_rating(event_id):
-    return session.query(Attendate.EventId, Attendance.Rating ,sql.func.count(Attendance.Rating)).\
-        filter_by(EventId=event_id).group_by(Attendance.Rating, Attendance.EventId).all()
+    def get_rating(self, event_id):
+        return [i for i in conn.\
+            execute(f'select avg(rating) from users_events where events_id = {event_id} group by events_id')][0][0]
 
-def get_comments(event_id):
-    return session.query(Attendance.EventId, Attendance.Rating, Attendance.Comment).filter_by(EventId=event_id).all()
+    def get_comments(self, event_id):
+        return [i for i in conn.execute(f'select rating, comment from users_events where events_id = {event_id}')]
 
-def get_attendants(event_id):
-    return session.query(Attendance.EventId, sql.func.count(*)).\
-        filter_by(EventId=event_id).group_by(Attendance.EventId).first()
+    def get_attendants(self, event_id):
+        return [i for i in conn.\
+            execute(f'select count(1) from users_events where events_id = {event_id} group by events_id')][0][0]
+
+    def get_metrics(self, _id):
+        temp = dict()
+        temp['rating'] = self.get_rating(_id)
+        temp['attendants'] = self.get_attendants(_id)
+        temp['comments'] = self.get_comments(_id)
+        return temp
 
 
-session.query(User).filter_by(Role='user').all()
-session.query(User).filter_by(Role='resident').all()
+
+
+
