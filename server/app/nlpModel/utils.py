@@ -33,7 +33,7 @@ def vectorize(model, text):
 
 def get_vector(model, word):
     try:
-        t = model.wv.get_vector(word)
+        t = model[word]
         return t
     except Exception:
         return np.zeros(MODEL_DIMS)
